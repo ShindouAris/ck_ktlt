@@ -7,6 +7,7 @@ class LienHe:
 class DanhBa:
     def __init__(self):
         self._danh_ba = []
+        self._so_dien_thoai = set() # dùng set để kiểm tra số điện thoại, chống lặp, hay còn nói là unique đi số điện thoại
 
     def _kiem_tra_ten(self, name):
         """
@@ -26,8 +27,11 @@ class DanhBa:
         if not self._kiem_tra_ten(name):
             # Kiểm tra xem tên có hợp lệ không, nếu không thì trả false kèm lý do từ chối luôn
             return False, "Tên bạn nhập vào không hợp lệ"
+        if phone_num in self._so_dien_thoai:
+            return False, "Số điện thoại này đã tồn tại rồi"
         # Hợp lệ thì thêm nó vào cuối danh sách
         self._danh_ba.append(LienHe(name, phone_num, email))
+        self._so_dien_thoai.add(phone_num)
         return True, "Thêm Liên hệ thành công"
 
     # HIEN THI
@@ -79,6 +83,7 @@ class DanhBa:
             if sdt == lh.sdt:
                 # Nếu sdt trùng với lh đang so sánh hiện tại
                 self._danh_ba.remove(lh) # Xoá liên hệ này khỏi danh sách
+                self._so_dien_thoai.remove(lh.sdt) # Xoá số này khỏi danh sách số điện thoại
 
                 return True, "Xoá thành công" # Trả về trạng thái True (Xoá thành công) và message (lý do)
 
@@ -103,7 +108,12 @@ class DanhBa:
             for line in f:
                 ten, sdt, email = line.strip().split(",")
 
+                if sdt in self._so_dien_thoai: # Kiểm tra xem sdt này có trong ds số chưa
+                    print(f"Lỗi: Số điện thoại này đã có trong danh bạ, bỏ qua")
+                    continue # Skip luôn khối đằng sau và nhảy đến item tiếp theo
+
                 self._danh_ba.append(LienHe(ten, sdt, email))
+                self._so_dien_thoai.add(sdt)
 
             f.close()
             return True

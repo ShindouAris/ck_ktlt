@@ -115,7 +115,6 @@ def main():
                         console.print(f"Không tìm thấy liên hệ với tên {search_ten}", style="bold red")
                 else:
                     console.print("Không tìm ai cả - Quay lại", style="yellow")
-                    continue
 
             case "Sắp xếp lại danh bạ":
                 danhba.sap_xep()
