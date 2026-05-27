@@ -1,26 +1,112 @@
-class  LienHe:
-    def __init__(self ,ten ,sdt ,email ):
-        ten.self = ten
-        sdt.self = sdt
-        email.self = email
-    
-    # thêm liên lạc
-    def themlienlac (danh_ba):
-        ten = input("Nhap ten ")
-        sdt = input("Nhap sdt")
-        email = input("Nhap email")
-        danh_ba.append(LienHe(ten,sdt,email))
-        print("Da them lien lac")
-    
-    #HAM HIEN THI
-    def hien_thi (danh_ba):
-        if not danh_ba:
-            print("Danh ba trong")
-            return
-        for i, lh in enumerate(danh_ba):
-            print(i, lh.ten)
+class LienHe:
+    def __init__(self, ten, sdt, email):
+        self.ten = ten # string
+        self.sdt = sdt # string (Lưu số 0 vào đầu, nếu dùng int sẽ mất tiêu
+        self.email = email # string
 
-    #SAP XEP THEO TEN
-    def sap_xep (danh_ba):
-        danh_ba.sort (key=lambda lh: lh.ten.split()[-1].lower())
-        print("Đã sắp xếp theo thứ tự")
+class DanhBa:
+    def __init__(self):
+        self._danh_ba = []
+
+    def _kiem_tra_ten(self, name):
+        """
+            Kiểm tra xem coi tên nhập vào có kí tự lạ không
+            Chặn '-' trong tên, vì nó dùng để phân biệt trong function xoá liên hệ
+        """
+
+        if "-" in name:
+            return False
+        if not name:
+            return False
+        return True
+
+    # THEM LIEN LAC
+    def themlienlac(self, name, phone_num, email):
+        """Thêm liên lạc vào mảng (danh sách) _danh_ba"""
+        if not self._kiem_tra_ten(name):
+            # Kiểm tra xem tên có hợp lệ không, nếu không thì trả false kèm lý do từ chối luôn
+            return False, "Tên bạn nhập vào không hợp lệ"
+        # Hợp lệ thì thêm nó vào cuối danh sách
+        self._danh_ba.append(LienHe(name, phone_num, email))
+        return True, "Thêm Liên hệ thành công"
+
+    # HIEN THI
+    def lay_danh_sach(self) -> list[LienHe]:
+        """Trả về mảng danh bạ chứa các liên hệ"""
+        return self._danh_ba
+
+    # SAP XEP
+    def sap_xep(self):
+        """Sắp xếp danh bạ theo Tên cuối của Liên hệ đó"""
+        # Hàm .sort để sắp xếp lại danh sách
+        # key -> lấy cái gì để đem đi so sánh
+        # lambda lh: -> hàm ngắn, nó tương tự như def lay_ten_cuoi(lh):
+        # lh.ten -> Lấy tên đầy đủ
+        # .split -> Tách nó ra theo khoảng trắng
+        # [-1] -> lấy phần tử cuối cùng của danh sách đã tách từ hàm split
+        # .lower() -> Chuyển thành chữ thường để tránh cho việc N < a
+        self._danh_ba.sort(key=lambda lh: lh.ten.split()[-1].lower())
+        # Sort xong thì trả về true để biết rằng đã sort xong
+        return True
+
+    # TIM KIEM
+    def tim_kiem(self, name):
+        """Hàm tìm kiếm, vâng, cơ chế đơn giàn, tìm theo tên bằng cách duyệt danh sách"""
+        found = []
+        for lh in self._danh_ba:
+            # Duyệt mảng danh bạ
+            if name in lh.ten:
+                # Kiểm tra tên được cho vào hàm <name> có nằm trong liên hệ đang so sánh hiên tại <lh> không
+                # Nếu có, thêm liên hệ đó vào danh sách
+                found.append(lh)
+
+        return found # Trả về kết quả đã tìm dưới dạng danh sách, [] (danh sách rỗng) nếu không tìm thấy ai hết
+
+    # XOA LIEN HE
+    def xoa_lien_he(self, lienhe):
+        """Hàm này xoá liên hệ, xong trả về trạng thái <False / True> và Reason"""
+        # Bốc số điện thoại ra từ chuỗi gửi vào hàm "<Tên> <Số điện thoại> <Email>
+        # .split để chẻ một chuỗi thành danh sách, gặp dấu cách thỉ cắt ra -> ["<tên>", "<Số điện thoại>", "<Email>"]
+        # Sau đó lấy phần tử thứ 1 (Danh sách trong python bắt đầu từ số 0
+        sdt = lienhe.split(" - ")[1]
+
+        if not self._danh_ba:
+            # Nếu cái danh sách danh bạ trống thì trả về trạng thái False, kèm lý do "Danh bạ trống"
+            return False, "Danh bạ trống"
+
+        for lh in self._danh_ba:
+            # Duyệt qua mảng danh bạ
+            if sdt == lh.sdt:
+                # Nếu sdt trùng với lh đang so sánh hiện tại
+                self._danh_ba.remove(lh) # Xoá liên hệ này khỏi danh sách
+
+                return True, "Xoá thành công" # Trả về trạng thái True (Xoá thành công) và message (lý do)
+
+        return False, f"Không tìm thấy liên hệ với sdt {sdt}" # Duyệt hết mảng rồi mà không thấy thì trả False kèm lý do
+
+    # GHI FILE
+    def ghi_file(self):
+        f = open("danhba.txt", "w", encoding="utf-8")
+
+        for lh in self._danh_ba:
+            f.write(lh.ten + "," + lh.sdt + "," + lh.email + "\n")
+
+        f.close()
+
+        return True
+
+    # DOC FILE
+    def doc_file(self):
+        try:
+            f = open("danhba.txt", "r", encoding="utf-8")
+
+            for line in f:
+                ten, sdt, email = line.strip().split(",")
+
+                self._danh_ba.append(LienHe(ten, sdt, email))
+
+            f.close()
+            return True
+        except Exception:
+            print("File lưu dữ liệu bị hỏng, bỏ qua")
+            return False
