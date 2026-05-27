@@ -1,139 +1,112 @@
 class LienHe:
     def __init__(self, ten, sdt, email):
-        self.ten = ten
-        self.sdt = sdt
-        self.email = email
+        self.ten = ten # string
+        self.sdt = sdt # string (Lưu số 0 vào đầu, nếu dùng int sẽ mất tiêu
+        self.email = email # string
+
+class DanhBa:
+    def __init__(self):
+        self._danh_ba = []
+
+    def _kiem_tra_ten(self, name):
+        """
+            Kiểm tra xem coi tên nhập vào có kí tự lạ không
+            Chặn '-' trong tên, vì nó dùng để phân biệt trong function xoá liên hệ
+        """
+
+        if "-" in name:
+            return False
+        if not name:
+            return False
+        return True
 
     # THEM LIEN LAC
-    def themlienlac(danh_ba):
-        ten = input("Nhap ten: ")
-        sdt = input("Nhap sdt: ")
-        email = input("Nhap email: ")
-
-        danh_ba.append(LienHe(ten, sdt, email))
-
-        print("Da them lien lac")
+    def themlienlac(self, name, phone_num, email):
+        """Thêm liên lạc vào mảng (danh sách) _danh_ba"""
+        if not self._kiem_tra_ten(name):
+            # Kiểm tra xem tên có hợp lệ không, nếu không thì trả false kèm lý do từ chối luôn
+            return False, "Tên bạn nhập vào không hợp lệ"
+        # Hợp lệ thì thêm nó vào cuối danh sách
+        self._danh_ba.append(LienHe(name, phone_num, email))
+        return True, "Thêm Liên hệ thành công"
 
     # HIEN THI
-    def hien_thi(danh_ba):
-        if not danh_ba:
-            print("Danh ba trong")
-            return
-
-        print("\n===== DANH BA =====")
-
-        for i, lh in enumerate(danh_ba):
-            print(i, lh.ten)
+    def lay_danh_sach(self) -> list[LienHe]:
+        """Trả về mảng danh bạ chứa các liên hệ"""
+        return self._danh_ba
 
     # SAP XEP
-    def sap_xep(danh_ba):
-        danh_ba.sort(key=lambda lh: lh.ten.split()[-1].lower())
-        print("Da sap xep")
+    def sap_xep(self):
+        """Sắp xếp danh bạ theo Tên cuối của Liên hệ đó"""
+        # Hàm .sort để sắp xếp lại danh sách
+        # key -> lấy cái gì để đem đi so sánh
+        # lambda lh: -> hàm ngắn, nó tương tự như def lay_ten_cuoi(lh):
+        # lh.ten -> Lấy tên đầy đủ
+        # .split -> Tách nó ra theo khoảng trắng
+        # [-1] -> lấy phần tử cuối cùng của danh sách đã tách từ hàm split
+        # .lower() -> Chuyển thành chữ thường để tránh cho việc N < a
+        self._danh_ba.sort(key=lambda lh: lh.ten.split()[-1].lower())
+        # Sort xong thì trả về true để biết rằng đã sort xong
+        return True
 
     # TIM KIEM
-    def tim_kiem(danh_ba):
-        ten = input("Nhap ten can tim: ")
+    def tim_kiem(self, name):
+        """Hàm tìm kiếm, vâng, cơ chế đơn giàn, tìm theo tên bằng cách duyệt danh sách"""
+        found = []
+        for lh in self._danh_ba:
+            # Duyệt mảng danh bạ
+            if name in lh.ten:
+                # Kiểm tra tên được cho vào hàm <name> có nằm trong liên hệ đang so sánh hiên tại <lh> không
+                # Nếu có, thêm liên hệ đó vào danh sách
+                found.append(lh)
 
-        for lh in danh_ba:
-            if ten in lh.ten:
-                print("Tim thay:")
-                print(lh.ten, lh.sdt, lh.email)
-                return
-
-        print("Khong tim thay")
+        return found # Trả về kết quả đã tìm dưới dạng danh sách, [] (danh sách rỗng) nếu không tìm thấy ai hết
 
     # XOA LIEN HE
-    def xoa_lien_he(danh_ba):
+    def xoa_lien_he(self, lienhe):
+        """Hàm này xoá liên hệ, xong trả về trạng thái <False / True> và Reason"""
+        # Bốc số điện thoại ra từ chuỗi gửi vào hàm "<Tên> <Số điện thoại> <Email>
+        # .split để chẻ một chuỗi thành danh sách, gặp dấu cách thỉ cắt ra -> ["<tên>", "<Số điện thoại>", "<Email>"]
+        # Sau đó lấy phần tử thứ 1 (Danh sách trong python bắt đầu từ số 0
+        sdt = lienhe.split(" - ")[1]
 
-        if not danh_ba:
-            print("Danh ba trong")
-            return
+        if not self._danh_ba:
+            # Nếu cái danh sách danh bạ trống thì trả về trạng thái False, kèm lý do "Danh bạ trống"
+            return False, "Danh bạ trống"
 
-        print("\n===== DANH SACH =====")
-
-        for lh in danh_ba:
-            print(lh.ten, "-", lh.sdt)
-
-        sdt = input("Nhap sdt can xoa: ")
-
-        for lh in danh_ba:
+        for lh in self._danh_ba:
+            # Duyệt qua mảng danh bạ
             if sdt == lh.sdt:
-                danh_ba.remove(lh)
+                # Nếu sdt trùng với lh đang so sánh hiện tại
+                self._danh_ba.remove(lh) # Xoá liên hệ này khỏi danh sách
 
-                print("Da xoa lien he")
-                return
+                return True, "Xoá thành công" # Trả về trạng thái True (Xoá thành công) và message (lý do)
 
-        print("Khong tim thay")
+        return False, f"Không tìm thấy liên hệ với sdt {sdt}" # Duyệt hết mảng rồi mà không thấy thì trả False kèm lý do
 
     # GHI FILE
-    def ghi_file(danh_ba):
+    def ghi_file(self):
         f = open("danhba.txt", "w", encoding="utf-8")
 
-        for lh in danh_ba:
+        for lh in self._danh_ba:
             f.write(lh.ten + "," + lh.sdt + "," + lh.email + "\n")
 
         f.close()
 
-        print("Da ghi vao file")
+        return True
 
     # DOC FILE
-    def doc_file(danh_ba):
+    def doc_file(self):
         try:
             f = open("danhba.txt", "r", encoding="utf-8")
 
             for line in f:
                 ten, sdt, email = line.strip().split(",")
 
-                danh_ba.append(LienHe(ten, sdt, email))
+                self._danh_ba.append(LienHe(ten, sdt, email))
 
             f.close()
-
-        except:
-            print("Chua co file danh ba")
-
-
-
-# CHUONG TRINH CHINH
-danh_ba = []
-
-# doc file khi mo chuong trinh
-LienHe.doc_file(danh_ba)
-
-while True:
-
-    print("\n===== MENU =====")
-    print("1. Them lien lac")
-    print("2. Hien thi danh ba")
-    print("3. Tim kiem")
-    print("4. Xoa lien he")
-    print("5. Sap xep")
-    print("6. Luu vao file")
-    print("0. Thoat")
-
-    chon = input("Nhap lua chon: ")
-
-    if chon == "1":
-        LienHe.themlienlac(danh_ba)
-
-    elif chon == "2":
-        LienHe.hien_thi(danh_ba)
-
-    elif chon == "3":
-        LienHe.tim_kiem(danh_ba)
-
-    elif chon == "4":
-        LienHe.xoa_lien_he(danh_ba)
-
-    elif chon == "5":
-        LienHe.sap_xep(danh_ba)
-
-    elif chon == "6":
-        LienHe.ghi_file(danh_ba)
-
-    elif chon == "0":
-        LienHe.ghi_file(danh_ba)
-
-        break
-
-    else:
-        print("Lua chon khong hop le")
+            return True
+        except Exception:
+            print("File lưu dữ liệu bị hỏng, bỏ qua")
+            return False
