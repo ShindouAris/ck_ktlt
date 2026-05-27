@@ -1,11 +1,11 @@
 class  LienHe:
     def __init__(self ,ten ,sdt ,email ):
-        ten.self = ten
-        sdt.self = sdt
-        email.self = email
+        self.ten = ten
+        self.sdt = sdt
+        self.email = email
     
     # thêm liên lạc
-    def themlienlac (danh_ba):
+    def themlienlac (self, danh_ba):
         ten = input("Nhap ten ")
         sdt = input("Nhap sdt")
         email = input("Nhap email")
@@ -27,9 +27,9 @@ class  LienHe:
 
     #XOA LIEN HE
     def xoa_lien_he(danh_ba):
-    if not danh_ba:
-        print("Danh ba rong")
-        return
+        if not danh_ba:
+            print("Danh ba rong")
+            return
     tu_khoa = input("Nhap ten hoac sdt can xoa: ").lower()
     for lh in danh_ba:
         if tu_khoa == lh.ten.lower() or tu_khoa == lh.sdt:
