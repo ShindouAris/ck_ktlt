@@ -19,16 +19,20 @@ class DanhBa:
             return False
         if not name:
             return False
+        if "," in name:
+            return False
         return True
 
     # THEM LIEN LAC
-    def themlienlac(self, name, phone_num, email):
+    def them_lien_lac(self, name, phone_num, email):
         """Thêm liên lạc vào mảng (danh sách) _danh_ba"""
         if not self._kiem_tra_ten(name):
             # Kiểm tra xem tên có hợp lệ không, nếu không thì trả false kèm lý do từ chối luôn
             return False, "Tên bạn nhập vào không hợp lệ"
         if phone_num in self._so_dien_thoai:
             return False, "Số điện thoại này đã tồn tại rồi"
+        if "," in phone_num or "," in email or "-" in phone_num or "-" in email:
+            return False, "Đầu vào không hợp lệ"
         # Hợp lệ thì thêm nó vào cuối danh sách
         self._danh_ba.append(LienHe(name, phone_num, email))
         self._so_dien_thoai.add(phone_num)
@@ -59,7 +63,7 @@ class DanhBa:
         found = []
         for lh in self._danh_ba:
             # Duyệt mảng danh bạ
-            if name in lh.ten:
+            if name in lh.ten.lower():
                 # Kiểm tra tên được cho vào hàm <name> có nằm trong liên hệ đang so sánh hiên tại <lh> không
                 # Nếu có, thêm liên hệ đó vào danh sách
                 found.append(lh)
@@ -91,32 +95,31 @@ class DanhBa:
 
     # GHI FILE
     def ghi_file(self):
-        f = open("danhba.txt", "w", encoding="utf-8")
+        with open("danhba.txt", "w", encoding="utf-8") as f:
 
-        for lh in self._danh_ba:
-            f.write(lh.ten + "," + lh.sdt + "," + lh.email + "\n")
-
-        f.close()
+            for lh in self._danh_ba:
+                f.write(lh.ten + "," + lh.sdt + "," + lh.email + "\n")
 
         return True
 
     # DOC FILE
     def doc_file(self):
         try:
-            f = open("danhba.txt", "r", encoding="utf-8")
+            with open("danhba.txt", "r", encoding="utf-8") as f:
 
-            for line in f:
-                ten, sdt, email = line.strip().split(",")
+                for line in f:
+                    ten, sdt, email = line.strip().split(",")
 
-                if sdt in self._so_dien_thoai: # Kiểm tra xem sdt này có trong ds số chưa
-                    print(f"Lỗi: Số điện thoại này đã có trong danh bạ, bỏ qua")
-                    continue # Skip luôn khối đằng sau và nhảy đến item tiếp theo
+                    if sdt in self._so_dien_thoai: # Kiểm tra xem sdt này có trong ds số chưa
+                        print(f"Lỗi: Số điện thoại này đã có trong danh bạ, bỏ qua")
+                        continue # Skip luôn khối đằng sau và nhảy đến item tiếp theo
 
-                self._danh_ba.append(LienHe(ten, sdt, email))
-                self._so_dien_thoai.add(sdt)
+                    self._danh_ba.append(LienHe(ten, sdt, email))
+                    self._so_dien_thoai.add(sdt)
 
-            f.close()
             return True
+        except FileNotFoundError:
+            return False
         except Exception:
             print("File lưu dữ liệu bị hỏng, bỏ qua")
             return False
