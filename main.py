@@ -70,7 +70,7 @@ def main():
                     default="",
                     console=console
                 )
-                result, reason = danhba.themlienlac(ten, so_dien_thoai, email)
+                result, reason = danhba.them_lien_lac(ten, so_dien_thoai, email)
                 if result:
                     console.print(f"Đã thêm: {ten} vào danh bạ", style="bold green")
                 else:
