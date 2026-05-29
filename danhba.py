@@ -61,7 +61,7 @@ class DanhBa:
         # .split -> Tách nó ra theo khoảng trắng
         # [-1] -> lấy phần tử cuối cùng của danh sách đã tách từ hàm split
         # .lower() -> Chuyển thành chữ thường để tránh cho việc N < a
-        self._danh_ba.sort(key=lambda lh: locale.strxfrm(lh.ten.split().lower()[-1]))
+        self._danh_ba.sort(key=lambda lh: locale.strxfrm(lh.ten.split()[-1].lower()))
         # Sort xong thì trả về true để biết rằng đã sort xong
         return True
 
