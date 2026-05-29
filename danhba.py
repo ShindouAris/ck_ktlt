@@ -1,3 +1,6 @@
+import locale
+locale.setlocale(locale.LC_COLLATE, 'Vietnamese_Vietnam.1258')
+
 class LienHe:
     def __init__(self, ten, sdt, email):
         self.ten = ten # string
@@ -49,11 +52,12 @@ class DanhBa:
         # Hàm .sort để sắp xếp lại danh sách
         # key -> lấy cái gì để đem đi so sánh
         # lambda lh: -> hàm ngắn, nó tương tự như def lay_ten_cuoi(lh):
+        # locale.strxfrm() là hàm để biến string thành “key” dùng cho sorting theo ngôn ngữ địa phương
         # lh.ten -> Lấy tên đầy đủ
         # .split -> Tách nó ra theo khoảng trắng
         # [-1] -> lấy phần tử cuối cùng của danh sách đã tách từ hàm split
         # .lower() -> Chuyển thành chữ thường để tránh cho việc N < a
-        self._danh_ba.sort(key=lambda lh: lh.ten.split()[-1].lower())
+        self._danh_ba.sort(key=lambda lh: locale.strxfrm(lh.ten.split().lower()[-1]))
         # Sort xong thì trả về true để biết rằng đã sort xong
         return True
 
@@ -63,7 +67,7 @@ class DanhBa:
         found = []
         for lh in self._danh_ba:
             # Duyệt mảng danh bạ
-            if name in lh.ten.lower():
+            if name.lower() in lh.ten.lower():
                 # Kiểm tra tên được cho vào hàm <name> có nằm trong liên hệ đang so sánh hiên tại <lh> không
                 # Nếu có, thêm liên hệ đó vào danh sách
                 found.append(lh)
