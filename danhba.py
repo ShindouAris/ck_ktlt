@@ -1,4 +1,8 @@
 import locale
+# Hàm này đổi locale hiện tại của chương trình
+# locale.LC_COLLATE là quy tắc so sánh và sắp xếp chuỗi
+# 'Vietnamese_Vietnam.1258': Đây là tên locale trên Windows.
+# ChatGPT giải thích kĩ dòng này làm ơn
 locale.setlocale(locale.LC_COLLATE, 'Vietnamese_Vietnam.1258')
 
 class LienHe:
