@@ -27,7 +27,7 @@ def main():
     while True:
         # Xoá console
         console.clear()
-        console.print("Danh bạ promax 67", style="bold bright_white blue")
+        console.print("Danh bạ CLI", style="bold bright_white blue")
         # Lấy danh sách liên hệ ra
         lienhe = danhba.lay_danh_sach()
         # Thiết lập bảng để hiển thị danh sách liên hệ

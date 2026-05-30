@@ -4,6 +4,9 @@ import locale
 # 'Vietnamese_Vietnam.1258': Đây là tên locale trên Windows.
 # ChatGPT giải thích kĩ dòng này làm ơn
 locale.setlocale(locale.LC_COLLATE, 'Vietnamese_Vietnam.1258')
+import re
+pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+pattern_phone = r'^\+?\d+$'
 
 class LienHe:
     def __init__(self, ten, sdt, email):
@@ -31,18 +34,28 @@ class DanhBa:
         return True
 
     # THEM LIEN LAC
-    def them_lien_lac(self, name, phone_num, email):
+    def them_lien_lac(self, name, phone_num: str, email):
         """Thêm liên lạc vào mảng (danh sách) _danh_ba"""
+
         if not self._kiem_tra_ten(name):
             # Kiểm tra xem tên có hợp lệ không, nếu không thì trả false kèm lý do từ chối luôn
             return False, "Tên bạn nhập vào không hợp lệ"
+
         if phone_num in self._so_dien_thoai:
             return False, "Số điện thoại này đã tồn tại rồi"
-        if "," in phone_num or "," in email or "-" in phone_num or "-" in email:
-            return False, "Đầu vào không hợp lệ"
+
+        if email and not re.fullmatch(pattern, email): # Regex để Kiểm tra xem email có hợp lệ không
+            return False, "Email bạn nhập vào không hợp lệ"
+
+        if phone_num and not re.fullmatch(pattern_phone, phone_num.strip()): # Kiểm tra xem số điện thoại có hợp lệ không, xoá space và leading bằng .strip()
+            return False, "Số điện thoại không hợp lệ"
+
         # Hợp lệ thì thêm nó vào cuối danh sách
-        self._danh_ba.append(LienHe(name, phone_num, email))
+
+        self._danh_ba.append(LienHe(name, phone_num.strip(), email))
+
         self._so_dien_thoai.add(phone_num)
+
         return True, "Thêm Liên hệ thành công"
 
     # HIEN THI
